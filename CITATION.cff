@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: "RAG Converter Tool"
+message: "If you use this software, please cite it using the metadata below."
+type: software
+authors:
+  - family-names: "Cuevas Villarrubia"
+    given-names: "Pedro Luis"
+    affiliation: "Innovation Practitioner & AI Agent Architect"
+repository-code: "https://github.com/asturwebs/RAG-Converter-Tool"
+license: "MIT"
+version: "2.0.0"
+date-released: "2026-03-27"
+abstract: "Office-to-Markdown converter for RAG pipelines with multimodal image analysis, QA controls, and certification reporting."
+keywords:
+  - RAG
+  - Office automation
+  - Markdown
+  - OCR
+  - Multimodal AI
