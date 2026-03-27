@@ -1,0 +1,28 @@
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Generated logs and summaries
+rag_converter_log.txt
+rag_converter_qa_log.txt
+rag_converter_summary.txt
+outputs/logs/
+
+# Generated reports
+RAG_Certificacion_*.md
+Informe_RAG_*.md
+outputs/reports/
+
+# Temporary Office export artifacts
+*.tmp.html
+*.tmp.utf8.txt
+*.tmp.doc
+*.tmp.docx
+*.tmp_archivos/
+
+# PowerShell and system artifacts
+*.log
+*.tmp
+Thumbs.db
+Desktop.ini
