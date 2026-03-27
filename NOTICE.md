@@ -1,5 +1,7 @@
 # NOTICE
 
+[English](NOTICE.md) | [Español](NOTICE.es.md) | [简体中文](NOTICE.zh-CN.md) | [한국어](NOTICE.ko-KR.md)
+
 This project is released under the MIT License.
 
 Original architect and maintainer:

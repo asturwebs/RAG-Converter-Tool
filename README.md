@@ -2,7 +2,9 @@
 
 # RAG Converter Tool
 
-**Convierte documentos Office en Markdown listo para pipelines RAG.**
+**Convert Office documents to Markdown ready for RAG pipelines.**
+
+[English](README.md) | [Español](README.es.md) | [简体中文](README.zh-CN.md) | [한국어](README.ko-KR.md)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/asturwebs/RAG-Converter-Tool/blob/main/LICENSE)
 [![PowerShell 7+](https://img.shields.io/badge/PowerShell-7+-5391DE.svg)](https://learn.microsoft.com/en-us/powershell/scripting/overview)
@@ -13,55 +15,55 @@
 
 ---
 
-Convierte archivos `.doc`, `.docx` y `.pptx` en Markdown estructurado optimizado para sistemas RAG, con análisis de imágenes mediante IA, validación de calidad y generación de informes de certificación.
+Converts `.doc`, `.docx` and `.pptx` files into structured Markdown optimized for RAG systems, with AI-powered image analysis, quality validation and certification report generation.
 
-Nació como herramienta interna validada en producción. Liberado como open source para que la comunidad se beneficie.
+Born as an internal tool validated in production. Released as open source for the community to benefit.
 
 ---
 
-## Que hace
+## What it does
 
-| Capacidad | Descripcion |
+| Capability | Description |
 |-----------|-------------|
-| **Conversion** | Office a Markdown con estructura jerarquica, indice y anclas |
-| **Vision IA** | Analisis de imagenes embebidas: OCR, analisis espacial, valor pedagogico |
-| **QA automatico** | Validacion por lote con estado `NORM_OK` o `NORM_WITH_ERRORS` |
-| **Informes** | Generacion de informes comerciales y tecnicos con metricas reales |
-| **Multi-cliente** | Configuracion independiente por cliente con `.env.<cliente>.<entorno>` |
-| **Idempotente** | Omite archivos ya procesados; `-Reprocess` fuerza reproceso |
+| **Conversion** | Office to Markdown with hierarchical structure, table of contents and anchors |
+| **AI Vision** | Analysis of embedded images: OCR, spatial analysis, pedagogical value |
+| **Automatic QA** | Batch validation with `NORM_OK` or `NORM_WITH_ERRORS` status |
+| **Reports** | Generation of commercial and technical reports with real metrics |
+| **Multi-client** | Independent configuration per client with `.env.<client>.<environment>` |
+| **Idempotent** | Skips already processed files; `-Reprocess` forces reprocessing |
 
-## Limitaciones actuales
+## Current limitations
 
-- **Windows** con Microsoft Word y PowerPoint instalados (automatizacion COM)
-- **PowerShell 7+** requerido
-- Necesita clave API de un proveedor de modelos vision (OpenRouter, OpenAI, etc.)
+- **Windows** with Microsoft Word and PowerPoint installed (COM automation)
+- **PowerShell 7+** required
+- Requires an API key from a vision model provider (OpenRouter, OpenAI, etc.)
 
-La [hoja de ruta](./ROADMAP.md) incluye planes para soporte multiplataforma (Python, Docker) y mas formatos (PDF, XLSX, imagenes).
+The [roadmap](./ROADMAP.md) includes plans for cross-platform support (Python, Docker) and more formats (PDF, XLSX, images).
 
 ---
 
-## Estructura
+## Structure
 
 ```
 RAG_Converter_Tool/
-├── Convert-OfficeToRAG.ps1     # Motor principal de conversion y QA
-├── Run-RAG.ps1                # Launcher con soporte .env
-├── Enable-RagAlias.ps1         # Alias de sesion (rag, rr, rag-report)
-├── Gen-Report.ps1             # Generador de informes
-├── .env.example              # Plantilla de configuracion
-├── DEV_GUIDE.md              # Guia tecnica completa
-├── ROADMAP.md                # Hoja de ruta del proyecto
+├── Convert-OfficeToRAG.ps1     # Main conversion and QA engine
+├── Run-RAG.ps1                # Launcher with .env support
+├── Enable-RagAlias.ps1         # Session aliases (rag, rr, rag-report)
+├── Gen-Report.ps1             # Report generator
+├── .env.example              # Configuration template
+├── DEV_GUIDE.md              # Full technical guide
+├── ROADMAP.md                # Project roadmap
 ├── LICENSE                   # MIT
-├── NOTICE.md                  # Atribucion para uso comercial
-├── CITATION.cff              # Citacion academica
-└── docs/                     # Documentacion adicional
+├── NOTICE.md                  # Attribution for commercial use
+├── CITATION.cff              # Academic citation
+└── docs/                     # Additional documentation
 ```
 
 ---
 
-## Instalacion
+## Installation
 
-No requiere instalacion. Clona el repositorio y configura tu clave API:
+No installation required. Clone the repository and configure your API key:
 
 ```powershell
 git clone https://github.com/asturwebs/RAG-Converter-Tool.git
@@ -69,63 +71,63 @@ cd RAG_Converter_Tool
 Copy-Item ".env.example" ".env"
 ```
 
-Edita `.env` y aniade tu `OPENROUTER_API_KEY`.
+Edit `.env` and add your `OPENROUTER_API_KEY`.
 
-## Uso rapido
+## Quick start
 
 ```powershell
-# Cargar alias en la sesion actual
+# Load aliases in the current session
 . ".\Enable-RagAlias.ps1"
 
-# Convertir todos los documentos de una carpeta
-rag -Target "C:\Ruta\Documentos"
+# Convert all documents in a folder
+rag -Target "C:\Path\Documents"
 
-# Convertir un archivo concreto
-rag -Target "C:\Ruta\Informe.docx" -Reprocess
+# Convert a specific file
+rag -Target "C:\Path\Report.docx" -Reprocess
 
-# Generar informe de certificacion
+# Generate certification report
 rag-report -Modo comercial -Cliente "Acme Corp"
 rag-report -Modo tecnico -Cliente "Acme Corp"
 ```
 
-## Multi-cliente
+## Multi-client
 
-Gestiona multiples clientes con archivos de entorno independientes:
+Manage multiple clients with independent environment files:
 
 ```powershell
-# Crear configuracion por cliente
+# Create configuration per client
 Copy-Item ".env.example" ".env.acme.prod"
 Copy-Item ".env.example" ".env.contoso.staging"
 
-# Ejecutar por cliente
-rag -EnvFile ".env.acme.prod" -Target "C:\Ruta\Documentos"
+# Run per client
+rag -EnvFile ".env.acme.prod" -Target "C:\Path\Documents"
 ```
 
-## Informes de certificacion
+## Certification reports
 
-La herramienta genera informes automaticos con metricas reales de la ejecucion:
+The tool generates automatic reports with real execution metrics:
 
-- **Comercial:** Resumen ejecutivo para entrega a clientes
-- **Tecnico:** Auditoria forense con metricas detalladas
+- **Commercial:** Executive summary for client delivery
+- **Technical:** Forensic audit with detailed metrics
 
-Ambos modos incluyen: archivos procesados, imagenes analizadas, estado QA, tiempos y firma del responsable.
+Both modes include: processed files, analyzed images, QA status, timings and responsible signature.
 
-## Perfiles
+## Profiles
 
-Tres perfiles predefinidos con configuracion de modelo ajustada:
+Three predefined profiles with tuned model configuration:
 
-| Perfil | Uso |
-|--------|-----|
-| `default` | Desarrollo y pruebas |
-| `staging` | Pre-produccion con parametros conservadores |
-| `prod` | Produccion con maxima calidad de analisis |
+| Profile | Use case |
+|---------|----------|
+| `default` | Development and testing |
+| `staging` | Pre-production with conservative parameters |
+| `prod` | Production with maximum analysis quality |
 
-## Licencia
+## License
 
-MIT. Ver [LICENSE](./LICENSE).
+MIT. See [LICENSE](./LICENSE).
 
-Uso comercial: se agradece atribucion visible al autor. Ver [NOTICE.md](./NOTICE.md).
+Commercial use: visible attribution to the author is appreciated. See [NOTICE.md](./NOTICE.md).
 
-## Autor
+## Author
 
 **Pedro Luis Cuevas Villarrubia** — Innovation Practitioner & AI Agent Architect

@@ -1,187 +1,189 @@
+[English](ROADMAP.md) | [Español](ROADMAP.es.md) | [简体中文](ROADMAP.zh-CN.md) | [한국어](ROADMAP.ko-KR.md)
+
 # Roadmap — RAG Converter Tool
 
-> Herramienta de conversión documental para pipelines RAG.
-> Objetivo: convertirse en el estándar open-source de ingesta documental para sistemas RAG.
+> Document conversion tool for RAG pipelines.
+> Goal: become the open-source standard for document ingestion in RAG systems.
 
 ---
 
-## Fase 1 — Core Python (Fundación Multiplataforma)
+## Phase 1 — Core Python (Cross-Platform Foundation)
 
-**Objetivo:** Eliminar la dependencia de PowerShell + Windows + Office COM.
+**Goal:** Eliminate the dependency on PowerShell + Windows + Office COM.
 
-### 1.1 Motor Python
-- [ ] Reescritura del motor en Python 3.11+
-- [ ] Extracción DOCX: `python-docx` (sin dependencia de Office)
-- [ ] Extracción PPTX: `python-pptx` (sin dependencia de Office)
-- [ ] Extracción DOC (legado): `antiword` + `textract` como fallback
-- [ ] CLI nativa via `click` o `typer`
-- [ ] Compatibilidad: Windows, macOS, Linux
+### 1.1 Python Engine
+- [ ] Rewrite the engine in Python 3.11+
+- [ ] DOCX extraction: `python-docx` (no Office dependency)
+- [ ] PPTX extraction: `python-pptx` (no Office dependency)
+- [ ] DOC extraction (legacy): `antiword` + `textract` as fallback
+- [ ] Native CLI via `click` or `typer`
+- [ ] Compatibility: Windows, macOS, Linux
 
-### 1.2 Integración Vision AI
-- [ ] Migrar llamadas OpenRouter a `httpx` (async, timeout, retry)
-- [ ] Soporte multi-proveedor: OpenRouter, OpenAI, Anthropic, Ollama (local)
-- [ ] Configuración de proveedor por `.env` (como el sistema multi-cliente actual)
+### 1.2 Vision AI Integration
+- [ ] Migrate OpenRouter calls to `httpx` (async, timeout, retry)
+- [ ] Multi-provider support: OpenRouter, OpenAI, Anthropic, Ollama (local)
+- [ ] Provider configuration via `.env` (like the current multi-client system)
 
-### 1.3 QA y Normalización
-- [ ] Portar diccionario OCR y token maps a Python
-- [ ] Portar sistema de validación QA (`Test-RagOutput` equivalente)
-- [ ] Tests unitarios con `pytest` (cobertura >80%)
+### 1.3 QA and Normalization
+- [ ] Port OCR dictionary and token maps to Python
+- [ ] Port QA validation system (`Test-RagOutput` equivalent)
+- [ ] Unit tests with `pytest` (>80% coverage)
 
-### 1.4 Distribución
-- [ ] Paquete `pip`: `pip install rag-converter-tool`
-- [ ] Imagen Docker para uso sin instalación local
-- [ ] `pyproject.toml` con metadata, dependencias y entry points
+### 1.4 Distribution
+- [ ] `pip` package: `pip install rag-converter-tool`
+- [ ] Docker image for use without local installation
+- [ ] `pyproject.toml` with metadata, dependencies, and entry points
 
-**Entregable:** `rag-converter-tool` v3.0.0 en PyPI + Docker Hub
-
----
-
-## Fase 2 — Multi-Documento
-
-**Objetivo:** Soportar los formatos más comunes en entornos reales.
-
-| Formato | Librería | Prioridad |
-|---------|----------|-----------|
-| **PDF** | `PyMuPDF` (`fitz`) + `pdfplumber` | CRITICA |
-| **XLSX / XLS** | `openpyxl` | ALTA |
-| **CSV / TSV** | Built-in `csv` | ALTA |
-| **ODT / ODP** | `odfpy` + `ezodf` | MEDIA |
-| **RTF** | `striprtf` | MEDIA |
-| **EPUB** | `ebooklib` | BAJA |
-| **Imágenes sueltas** (PNG, JPG, WEBP) | Vision AI directa | ALTA |
-| **HTML** | `beautifulsoup4` | MEDIA |
-| **Markdown** | Passthrough + validación | BAJA |
-
-### 2.1 Extracción PDF (prioridad #1)
-- [ ] Extracción de texto con preservación de estructura
-- [ ] Detección y extracción de tablas embebidas
-- [ ] Extracción de imágenes embebidas → Vision AI
-- [ ] Manejo de PDF escaneados (imagen → OCR → texto)
-- [ ] Soporte para PDF protegidos (donde sea legal)
-
-### 2.2 Extracción Tabular (XLSX/CSV)
-- [ ] Hojas → tablas Markdown
-- [ ] Detección automática de encabezados
-- [ ] Opción de chunking por fila vs por bloque
-
-### 2.3 Imágenes sueltas
-- [ ] Input de carpetas de imágenes (PNG, JPG, WEBP)
-- [ ] Análisis Vision AI directo sin wrapper documental
-- [ ] Generación de Markdown con bloques de análisis por imagen
-
-### 2.4 Registro de formatos (plugin system)
-- [ ] Arquitectura de extractores por formato (registry pattern)
-- [ ] Cada formato = un extractor independiente
-- [ ] Fácil añadir nuevos formatos sin tocar el core
-
-**Entregable:** `rag-converter-tool` v3.1.0 con soporte PDF + XLSX + imágenes
+**Deliverable:** `rag-converter-tool` v3.0.0 on PyPI + Docker Hub
 
 ---
 
-## Fase 3 — API y SaaS
+## Phase 2 — Multi-Document
 
-**Objetivo:** Monetización vía servicio. Los usuarios pagan por conversión, no por instalar.
+**Goal:** Support the most common formats in real-world environments.
+
+| Format | Library | Priority |
+|--------|---------|----------|
+| **PDF** | `PyMuPDF` (`fitz`) + `pdfplumber` | CRITICAL |
+| **XLSX / XLS** | `openpyxl` | HIGH |
+| **CSV / TSV** | Built-in `csv` | HIGH |
+| **ODT / ODP** | `odfpy` + `ezodf` | MEDIUM |
+| **RTF** | `striprtf` | MEDIUM |
+| **EPUB** | `ebooklib` | LOW |
+| **Standalone images** (PNG, JPG, WEBP) | Direct Vision AI | HIGH |
+| **HTML** | `beautifulsoup4` | MEDIUM |
+| **Markdown** | Passthrough + validation | LOW |
+
+### 2.1 PDF Extraction (priority #1)
+- [ ] Text extraction with structure preservation
+- [ ] Detection and extraction of embedded tables
+- [ ] Embedded image extraction → Vision AI
+- [ ] Scanned PDF handling (image → OCR → text)
+- [ ] Support for protected PDFs (where legally permitted)
+
+### 2.2 Tabular Extraction (XLSX/CSV)
+- [ ] Sheets → Markdown tables
+- [ ] Automatic header detection
+- [ ] Chunking option: by row vs. by block
+
+### 2.3 Standalone Images
+- [ ] Image folder input (PNG, JPG, WEBP)
+- [ ] Direct Vision AI analysis without document wrapper
+- [ ] Markdown generation with per-image analysis blocks
+
+### 2.4 Format Registry (plugin system)
+- [ ] Per-format extractor architecture (registry pattern)
+- [ ] Each format = an independent extractor
+- [ ] Easy to add new formats without touching the core
+
+**Deliverable:** `rag-converter-tool` v3.1.0 with PDF + XLSX + image support
+
+---
+
+## Phase 3 — API and SaaS
+
+**Goal:** Monetization via service. Users pay for conversion, not for installation.
 
 ### 3.1 REST API
-- [ ] FastAPI con endpoints async
-- [ ] `POST /convert` — subida de archivo, devuelve Markdown
-- [ ] `POST /batch` — lote de archivos
-- [ ] `GET /status/{job_id}` — consulta de progreso
-- [ ] `GET /report/{job_id}` — descarga de informe de certificación
-- [ ] Autenticación via API keys
-- [ ] Rate limiting por plan
+- [ ] FastAPI with async endpoints
+- [ ] `POST /convert` — file upload, returns Markdown
+- [ ] `POST /batch` — batch of files
+- [ ] `GET /status/{job_id}` — progress check
+- [ ] `GET /report/{job_id}` — certification report download
+- [ ] Authentication via API keys
+- [ ] Rate limiting per plan
 
 ### 3.2 Web UI
-- [ ] Interfaz de arrastrar-y-soltar (drag & drop)
-- [ ] Vista previa del Markdown generado
-- [ ] Descarga directa o enlace al resultado
-- [ ] Dashboard de historial de conversiones
+- [ ] Drag-and-drop interface
+- [ ] Preview of generated Markdown
+- [ ] Direct download or link to result
+- [ ] Conversion history dashboard
 
-### 3.3 Modelos de suscripción
-- **Free:** 10 conversiones/mes, PDF hasta 5MB
-- **Pro:** 500 conversiones/mes, todos los formatos, hasta 50MB, API access
-- **Enterprise:** Ilimitado, SSO, API dedicada, SLA
+### 3.3 Subscription Models
+- **Free:** 10 conversions/month, PDF up to 5MB
+- **Pro:** 500 conversions/month, all formats, up to 50MB, API access
+- **Enterprise:** Unlimited, SSO, dedicated API, SLA
 
-### 3.4 Infraestructura
-- [ ] Docker Compose para despliegue auto-hospedado
-- [ ] Worker queue (Celery/Redis) para procesamiento asíncrono
-- [ ] Almacenamiento S3-compatible para archivos y resultados
-- [ ] Telemetría anónima de uso (opt-in)
+### 3.4 Infrastructure
+- [ ] Docker Compose for self-hosted deployment
+- [ ] Worker queue (Celery/Redis) for async processing
+- [ ] S3-compatible storage for files and results
+- [ ] Anonymous usage telemetry (opt-in)
 
-**Entregable:** `rag-converter-api` v1.0.0 desplegable en cualquier VPS
-
----
-
-## Fase 4 — Diferenciadores (Lo que nadie tiene)
-
-### 4.1 Chunking Inteligente para RAG
-- [ ] Chunking por semántica (no por tokens fijos)
-- [ ] Respeto de fronteras de sección, párrafo y página
-- [ ] Overlap configurable entre chunks
-- [ ] Metadatos de fuente por chunk (archivo, página, sección)
-- [ ] Exportación a formatos listos para LangChain, LlamaIndex, ChromaDB
-
-### 4.2 Calidad Certificable
-- [ ] Score de calidad automático por documento (0-100)
-- [ ] Fingerprint del documento original (hash SHA-256)
-- [ ] Traza completa: archivo original → chunk → embedding
-- [ ] Informes de auditoría por lote (feature actual, mejorado)
-
-### 4.3 Perfiles de Dominio
-- [ ] Perfiles predefinidos: Legal, Médico, Académico, Técnico, Financiero
-- [ ] Cada perfil ajusta: terminología, ruido a filtrar, estructura de salida
-- [ ] Perfiles personalizables por el usuario
-- [ ] Marketplace de perfiles (contribución comunitaria)
-
-### 4.4 Integraciones
-- [ ] Plugin para LangChain (`RAGConverterLoader`)
-- [ ] Plugin para LlamaIndex
-- [ ] Connector para ChromaDB, Pinecone, Weaviate
-- [ ] Webhook para notificar a pipelines externos al terminar un lote
-
-**Entregable:** `rag-converter-tool` v4.0.0 con chunking + integraciones
+**Deliverable:** `rag-converter-api` v1.0.0 deployable on any VPS
 
 ---
 
-## Visión a largo plazo
+## Phase 4 — Differentiators (What Nobody Else Has)
 
-- **Agente autónomo:** El tool como agente que ingesta, chunka, embeda y almacena en un RAG completo con una sola instrucción.
-- ** marketplace de perfiles de dominio** con contribuciones de la comunidad.
-- **ONNX Runtime** para ejecución local sin API externa (OCR + visión).
-- **Extensión VS Code** para preview y conversión desde el editor.
+### 4.1 Intelligent RAG Chunking
+- [ ] Semantic chunking (not fixed-token)
+- [ ] Respect for section, paragraph, and page boundaries
+- [ ] Configurable overlap between chunks
+- [ ] Source metadata per chunk (file, page, section)
+- [ ] Export to formats ready for LangChain, LlamaIndex, ChromaDB
+
+### 4.2 Certifiable Quality
+- [ ] Automatic quality score per document (0-100)
+- [ ] Original document fingerprint (SHA-256 hash)
+- [ ] Full traceability: original file → chunk → embedding
+- [ ] Batch audit reports (current feature, improved)
+
+### 4.3 Domain Profiles
+- [ ] Predefined profiles: Legal, Medical, Academic, Technical, Financial
+- [ ] Each profile adjusts: terminology, noise to filter, output structure
+- [ ] User-customizable profiles
+- [ ] Profile marketplace (community contribution)
+
+### 4.4 Integrations
+- [ ] LangChain plugin (`RAGConverterLoader`)
+- [ ] LlamaIndex plugin
+- [ ] Connector for ChromaDB, Pinecone, Weaviate
+- [ ] Webhook to notify external pipelines when a batch completes
+
+**Deliverable:** `rag-converter-tool` v4.0.0 with chunking + integrations
 
 ---
 
-## Timeline orientativa
+## Long-Term Vision
 
-| Fase | Scope | Esfuerzo estimado |
-|------|-------|-------------------|
-| Fase 1 | Python core + Docker | 2-3 semanas |
-| Fase 2 | PDF + XLSX + imágenes | 1-2 semanas |
-| Fase 3 | API + Web UI | 3-4 semanas |
-| Fase 4 | Chunking + integraciones | 2-3 semanas |
+- **Autonomous agent:** The tool as an agent that ingests, chunks, embeds, and stores in a complete RAG system with a single instruction.
+- **Domain profile marketplace** with community contributions.
+- **ONNX Runtime** for local execution without external APIs (OCR + vision).
+- **VS Code extension** for preview and conversion from the editor.
 
 ---
 
-## Contribuciones
+## Estimated Timeline
 
-Las contribuciones son bienvenidas. Ver [LICENSE](./LICENSE) y [NOTICE.md](./NOTICE.md) para términos.
-
-**Areas donde se busca contribución:**
-- Nuevos extractores de formato
-- Perfiles de dominio
-- Integraciones con frameworks RAG
-- Tests y documentación
+| Phase | Scope | Estimated Effort |
+|-------|-------|------------------|
+| Phase 1 | Python core + Docker | 2-3 weeks |
+| Phase 2 | PDF + XLSX + images | 1-2 weeks |
+| Phase 3 | API + Web UI | 3-4 weeks |
+| Phase 4 | Chunking + integrations | 2-3 weeks |
 
 ---
 
-## Nota del autor
+## Contributions
 
-RAG Converter Tool nació como una herramienta interna para un proyecto real de conversión de materiales educativos a formato RAG-Ready. Tras validar su utilidad en producción, se decidió liberar como open source para que la comunidad se beneficie.
+Contributions are welcome. See [LICENSE](./LICENSE) and [NOTICE.md](./NOTICE.md) for terms.
 
-Si esta herramienta te es útil y la usas en un entorno comercial, se agradece la atribución visible al autor original. Ver [NOTICE.md](./NOTICE.md).
+**Areas where contributions are sought:**
+- New format extractors
+- Domain profiles
+- RAG framework integrations
+- Tests and documentation
+
+---
+
+## Author's Note
+
+RAG Converter Tool was born as an internal tool for a real project converting educational materials to RAG-Ready format. After validating its usefulness in production, it was decided to release it as open source so the community can benefit.
+
+If you find this tool useful and use it in a commercial environment, visible attribution to the original author is appreciated. See [NOTICE.md](./NOTICE.md).
 
 ---
 
 *Pedro Luis Cuevas Villarrubia — Innovation Practitioner & AI Agent Architect*
-*Asturias, España — 2026*
+*Asturias, Spain — 2026*

@@ -1,52 +1,54 @@
-# Guía Dev - RAG Converter Tool
+[English](DEV_GUIDE.md) | [Español](DEV_GUIDE.es.md) | [简体中文](DEV_GUIDE.zh-CN.md) | [한국어](DEV_GUIDE.ko-KR.md)
 
-## 1) Objetivo
+# Dev Guide - RAG Converter Tool
 
-Esta herramienta convierte archivos Office (`.doc`, `.docx`, `.pptx`) a Markdown optimizado para RAG, manteniendo fidelidad estructural y aplicando normalización lingüística segura.
+## 1) Objective
 
-Script principal:
+This tool converts Office files (`.doc`, `.docx`, `.pptx`) to Markdown optimized for RAG, maintaining structural fidelity and applying safe linguistic normalization.
+
+Main script:
 
 - `Convert-OfficeToRAG.ps1`
 
-## 2) Requisitos
+## 2) Requirements
 
-- Windows con Microsoft Word y PowerPoint instalados (automatización COM).
-- PowerShell 7 (`pwsh`) instalado.
-- Permisos de lectura/escritura sobre las carpetas fuente.
+- Windows with Microsoft Word and PowerPoint installed (COM automation).
+- PowerShell 7 (`pwsh`) installed.
+- Read/write permissions over the source folders.
 
-Verificación rápida:
+Quick verification:
 
 ```powershell
 pwsh -NoProfile -Command "$PSVersionTable.PSVersion"
 ```
 
-## 3) Configuración
+## 3) Configuration
 
-Editar el bloque `$Config` al inicio de `Convert-OfficeToRAG.ps1`:
+Edit the `$Config` block at the beginning of `Convert-OfficeToRAG.ps1`:
 
-- `SourceFolders`: carpetas origen a procesar.
-- `FileExtensions`: extensiones permitidas.
-- `OcrDictionary`: diccionario conservador OCR.
-- `ResidualOcrRegex`: regex de validación de residuos.
-- `LogPath`, `QaLogPath`, `SummaryPath`: rutas de salida de logs.
-- `ForceReprocess`: fuerza reprocesado de archivos aunque ya exista `.md`.
+- `SourceFolders`: source folders to process.
+- `FileExtensions`: allowed extensions.
+- `OcrDictionary`: conservative OCR dictionary.
+- `ResidualOcrRegex`: residual validation regex.
+- `LogPath`, `QaLogPath`, `SummaryPath`: log output paths.
+- `ForceReprocess`: forces reprocessing of files even if `.md` already exists.
 
-Comportamiento portable:
+Portable behavior:
 
-- Si una ruta es relativa, el script la resuelve desde la carpeta donde vive `Convert-OfficeToRAG.ps1`.
-- Por defecto, los logs (`rag_converter_log.txt`, `rag_converter_qa_log.txt`, `rag_converter_summary.txt`) se escriben en `outputs/logs` dentro de la carpeta del script.
-- `SourceFolders` por defecto apunta a `..\input` respecto a la carpeta del script.
+- If a path is relative, the script resolves it from the folder where `Convert-OfficeToRAG.ps1` lives.
+- By default, logs (`rag_converter_log.txt`, `rag_converter_qa_log.txt`, `rag_converter_summary.txt`) are written to `outputs/logs` inside the script folder.
+- `SourceFolders` defaults to `..\input` relative to the script folder.
 
-Variables de entorno clave:
+Key environment variables:
 
-- `RAG_SOURCE_FOLDERS`: acepta múltiples rutas separadas por `;` o `,`.
-- `RAG_SOURCE_FILES`: acepta uno o varios archivos concretos separados por `;` o `,`.
-- `RAG_FORCE_REPROCESS`: `true/false` para reprocesar aunque exista `.md`.
-- `RAG_FAIL_FAST`: `true/false` para abortar o continuar ante errores.
-- `RAG_ENABLE_PREFLIGHT`: `true/false` para activar/desactivar preflight API.
-- `RAG_OPENROUTER_MODEL`: modelo de visión a usar.
+- `RAG_SOURCE_FOLDERS`: accepts multiple paths separated by `;` or `,`.
+- `RAG_SOURCE_FILES`: accepts one or more specific files separated by `;` or `,`.
+- `RAG_FORCE_REPROCESS`: `true/false` to reprocess even if `.md` exists.
+- `RAG_FAIL_FAST`: `true/false` to abort or continue on errors.
+- `RAG_ENABLE_PREFLIGHT`: `true/false` to enable/disable preflight API.
+- `RAG_OPENROUTER_MODEL`: vision model to use.
 
-Parámetros directos del script (prioridad alta, recomendados en automatización):
+Direct script parameters (high priority, recommended for automation):
 
 - `-SourceFoldersOverride <string[]>`
 - `-SourceFilesOverride <string[]>`
@@ -55,42 +57,42 @@ Parámetros directos del script (prioridad alta, recomendados en automatización
 - `-EnablePreflightOverride <bool>`
 - `-OpenRouterModelOverride <string>`
 
-## 4) Ejecución estándar
+## 4) Standard Execution
 
-Ejecutar siempre con `pwsh` para mantener estabilidad UTF-8. Comando agnóstico a ruta:
+Always run with `pwsh` to maintain UTF-8 stability. Path-agnostic command:
 
 ```powershell
 $toolDir = "D:\Ruta\Donde\Está\RAG_Converter_Tool"
 pwsh -NoProfile -File (Join-Path $toolDir "Convert-OfficeToRAG.ps1")
 ```
 
-Salida esperada en consola:
+Expected console output:
 
-- `NORM_OK` o `NORM_WITH_ERRORS`.
+- `NORM_OK` or `NORM_WITH_ERRORS`.
 
-## 5) Comando único (run + validación)
+## 5) Single Command (run + validation)
 
 ```powershell
 $toolDir = "D:\Ruta\Donde\Está\RAG_Converter_Tool"; pwsh -NoProfile -Command "$s=(Join-Path '$toolDir' 'Convert-OfficeToRAG.ps1'); $sum=(Join-Path '$toolDir' 'outputs\logs\rag_converter_summary.txt'); & $s; if($LASTEXITCODE -ne 0){ throw 'Falló la ejecución del convertidor' }; $st=(Get-Content $sum | Select-String '^STATUS=').Line; if($st -ne 'STATUS=NORM_OK'){ throw \"Estado inválido: $st\" }; Write-Host 'OK => STATUS=NORM_OK' -ForegroundColor Green"
 ```
 
-## 6) Operación diaria
+## 6) Daily Operations
 
-Auditoría rápida de resumen:
+Quick summary audit:
 
 ```powershell
 $toolDir = "D:\Ruta\Donde\Está\RAG_Converter_Tool"
 Get-Content -Path (Join-Path $toolDir "outputs\logs\rag_converter_summary.txt")
 ```
 
-Estado en una línea:
+One-line status:
 
 ```powershell
 $toolDir = "D:\Ruta\Donde\Está\RAG_Converter_Tool"
 (Get-Content (Join-Path $toolDir "outputs\logs\rag_converter_summary.txt") | Select-String '^STATUS=').Line
 ```
 
-Incidencias QA:
+QA incidents:
 
 ```powershell
 $toolDir = "D:\Ruta\Donde\Está\RAG_Converter_Tool"
@@ -98,100 +100,100 @@ $qa = Join-Path $toolDir "outputs\logs\rag_converter_qa_log.txt"
 if((Test-Path $qa) -and ((Get-Item $qa).Length -gt 0)){Get-Content $qa}else{"Sin incidencias QA"}
 ```
 
-## 7) Estructura del Script (`Convert-OfficeToRAG.ps1`)
+## 7) Script Structure (`Convert-OfficeToRAG.ps1`)
 
-El script está diseñado con un enfoque robusto y modular:
+The script is designed with a robust and modular approach:
 
-### 1. Inyección de Dominio (Prompts Agnósticos)
-El script ya no está acoplado a una temática específica (como el fútbol). Utiliza variables de configuración para inyectar el contexto dinámicamente en el prompt del modelo de IA:
-- `$Config.DomainContext`: Define el entorno (ej. "entorno educativo de alto rendimiento deportivo").
-- `$Config.DomainNoiseFilter`: Palabras clave a ignorar por el modelo (ej. "colores de ropa, paisajes, clima").
-- `$Config.DomainTechnicalTerms`: Instrucciones de precisión terminológica (ej. evitar sustituir términos especializados por sinónimos ambiguos).
+### 1. Domain Injection (Agnostic Prompts)
+The script is no longer coupled to a specific topic (such as football). It uses configuration variables to inject context dynamically into the AI model prompt:
+- `$Config.DomainContext`: Defines the environment (e.g. "high-performance sports educational environment").
+- `$Config.DomainNoiseFilter`: Keywords for the model to ignore (e.g. "clothing colors, landscapes, weather").
+- `$Config.DomainTechnicalTerms`: Terminological precision instructions (e.g. avoid replacing specialized terms with ambiguous synonyms).
 
-### 2. Extracción de Imágenes y OCR Estructurado
-El análisis de imágenes se realiza mediante la API de OpenRouter. El nuevo prompt exige un formato de salida estricto en Markdown que incluye:
-1. **OCR Literal**: Transcripción exacta de texto en diapositivas.
-2. **Análisis Técnico Espacial**: Interpretación de diagramas y flechas.
-3. **Valor Pedagógico**: Extracción del concepto central.
+### 2. Image Extraction and Structured OCR
+Image analysis is performed via the OpenRouter API. The new prompt requires a strict Markdown output format that includes:
+1. **Literal OCR**: Exact transcription of text in slides.
+2. **Spatial Technical Analysis**: Interpretation of diagrams and arrows.
+3. **Pedagogical Value**: Extraction of the core concept.
 
-### 3. Verbosidad y Sistema de Logs
-Para evitar "dar palos de ciego" durante ejecuciones masivas:
-- **Salida de Consola (Verbose):** Muestra el progreso en tiempo real (`[1/10] Procesando...`, `[Imagen 3/5] Solicitando análisis...`, `Generando Markdown final`).
-- **Telemetría COM:** Mide y muestra tiempos de `Word.Open` y `Word.SaveAs(HTML)` para detectar cuellos de botella.
-- **Archivos de Log:** 
-  - `rag_converter_log.txt`: Registra eventos con `INFO` y `ERROR` (incluyendo StackTraces).
-  - `rag_converter_qa_log.txt`: Registra errores de validación (ej. análisis de imagen incompleto).
-  - `rag_converter_summary.txt`: Resumen final de la ejecución.
+### 3. Verbosity and Logging System
+To avoid "flying blind" during massive runs:
+- **Console Output (Verbose):** Shows real-time progress (`[1/10] Processing...`, `[Image 3/5] Requesting analysis...`, `Generating final Markdown`).
+- **COM Telemetry:** Measures and displays `Word.Open` and `Word.SaveAs(HTML)` timings to detect bottlenecks.
+- **Log Files:**
+  - `rag_converter_log.txt`: Records events with `INFO` and `ERROR` (including StackTraces).
+  - `rag_converter_qa_log.txt`: Records validation errors (e.g. incomplete image analysis).
+  - `rag_converter_summary.txt`: Final execution summary.
 
-### 4. Perfiles y Fallback Automático
-- Soporta perfiles como `default` y `staging` para cambiar modelos rápidamente sin tocar el código.
-- Incluye un preflight check que verifica la conectividad y soporte multimodal de la API antes de empezar, con fallback automático de `vision` a `text` si el modelo no soporta imágenes.
+### 4. Profiles and Automatic Fallback
+- Supports profiles like `default` and `staging` to switch models quickly without touching code.
+- Includes a preflight check that verifies API connectivity and multimodal support before starting, with automatic fallback from `vision` to `text` if the model does not support images.
 
 ## 8) Troubleshooting
 
-- Si al lanzar con `powershell.exe` aparecen caracteres rotos en regex/tildes, usar `pwsh`.
-- Si COM falla, verificar instalación de Word/PowerPoint y sesión de usuario activa.
-- Si el estado es `NORM_WITH_ERRORS`, revisar primero `rag_converter_qa_log.txt`.
-- Si mueves la carpeta `RAG_Converter_Tool`, el script sigue funcionando; solo revisa `SourceFolders` si las fuentes quedaron en otra ubicación.
-- Si una extracción Word se queda lenta, revisar en consola los tiempos `Word.Open`/`Word.SaveAs(HTML)` para ubicar el cuello de botella.
-- Si hay archivos temporales bloqueados (`~$*.docx`), cerrarlos en Office antes de ejecutar el lote.
+- If launching with `powershell.exe` shows broken characters in regex/accents, use `pwsh`.
+- If COM fails, verify Word/PowerPoint installation and active user session.
+- If status is `NORM_WITH_ERRORS`, check `rag_converter_qa_log.txt` first.
+- If you move the `RAG_Converter_Tool` folder, the script still works; just review `SourceFolders` if the sources ended up in another location.
+- If a Word extraction runs slow, check the console for `Word.Open`/`Word.SaveAs(HTML)` timings to locate the bottleneck.
+- If there are locked temporary files (`~$*.docx`), close them in Office before running the batch.
 
-## 9) Runbook rápido
+## 9) Quick Runbook
 
-Ejecución completa (carpetas configuradas):
+Full execution (configured folders):
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 $env:OPENROUTER_API_KEY="TU_API_KEY"; $env:RAG_OPENROUTER_MODEL="google/gemini-3.1-flash-lite-preview"; $env:RAG_FAIL_FAST="false"; $env:RAG_ENABLE_PREFLIGHT="false"; & (Join-Path $toolDir "Convert-OfficeToRAG.ps1")
 ```
 
-Reprocesado completo forzado:
+Forced full reprocessing:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 $env:OPENROUTER_API_KEY="TU_API_KEY"; $env:RAG_OPENROUTER_MODEL="google/gemini-3.1-flash-lite-preview"; $env:RAG_FORCE_REPROCESS="true"; $env:RAG_FAIL_FAST="false"; $env:RAG_ENABLE_PREFLIGHT="false"; & (Join-Path $toolDir "Convert-OfficeToRAG.ps1")
 ```
 
-Ejecución de un solo archivo:
+Single file execution:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 $env:OPENROUTER_API_KEY="TU_API_KEY"; $env:RAG_OPENROUTER_MODEL="google/gemini-3.1-flash-lite-preview"; $env:RAG_SOURCE_FILES="D:\Ruta\Input\Documento.docx"; $env:RAG_FORCE_REPROCESS="true"; $env:RAG_FAIL_FAST="false"; $env:RAG_ENABLE_PREFLIGHT="false"; & (Join-Path $toolDir "Convert-OfficeToRAG.ps1")
 ```
 
-Ejecución de un solo archivo (vía parámetros, recomendado):
+Single file execution (via parameters, recommended):
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 $env:OPENROUTER_API_KEY="TU_API_KEY"; & (Join-Path $toolDir "Convert-OfficeToRAG.ps1") -SourceFilesOverride "D:\Ruta\Input\Documento.docx" -ForceReprocessOverride $true -FailFastOverride $false -EnablePreflightOverride $false -OpenRouterModelOverride "google/gemini-3.1-flash-lite-preview"
 ```
 
-Ejecución total aunque ya existan `.md` (vía parámetros):
+Full execution even if `.md` already exists (via parameters):
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 $env:OPENROUTER_API_KEY="TU_API_KEY"; & (Join-Path $toolDir "Convert-OfficeToRAG.ps1") -ForceReprocessOverride $true -FailFastOverride $false -EnablePreflightOverride $false -OpenRouterModelOverride "google/gemini-3.1-flash-lite-preview"
 ```
 
-## 10) Flujo simple con `.env` y alias
+## 10) Simple Workflow with `.env` and Aliases
 
-1) Crear `.env` copiando la plantilla:
+1) Create `.env` by copying the template:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 Copy-Item (Join-Path $toolDir ".env.example") (Join-Path $toolDir ".env") -Force
 ```
 
-2) Editar `.env` y poner tu `OPENROUTER_API_KEY`.
+2) Edit `.env` and set your `OPENROUTER_API_KEY`.
 
-3) Cargar alias cortos en la sesión actual:
+3) Load short aliases in the current session:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 . (Join-Path $toolDir "Enable-RagAlias.ps1")
 ```
 
-4) Usar comandos cortos:
+4) Use short commands:
 
 ```powershell
 rag
@@ -201,14 +203,14 @@ rag -Target "D:\Ruta\Input\Documento.docx" -Reprocess
 rr -Target "D:\Ruta\Input\Documento.docx" -Reprocess
 ```
 
-5) Opcional: persistir alias en el perfil de PowerShell:
+5) Optional: persist aliases in your PowerShell profile:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 . (Join-Path $toolDir "Enable-RagAlias.ps1") -Persist
 ```
 
-6) Escalabilidad multi-cliente con archivos `.env` dedicados:
+6) Multi-client scalability with dedicated `.env` files:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
@@ -216,11 +218,11 @@ Copy-Item (Join-Path $toolDir ".env.example") (Join-Path $toolDir ".env.acme.dev
 Copy-Item (Join-Path $toolDir ".env.example") (Join-Path $toolDir ".env.acme.prod") -Force
 ```
 
-Nota general:
-- Crea un archivo `.env` por cliente y entorno.
-- El parser de `.env` soporta comentarios con líneas que empiezan por `#`.
+General note:
+- Create one `.env` file per client and environment.
+- The `.env` parser supports comments on lines starting with `#`.
 
-Uso por cliente sin tocar comandos largos:
+Usage by client without typing long commands:
 
 ```powershell
 rag -EnvFile ".env.acme.dev"
@@ -228,63 +230,63 @@ rag -EnvFile ".env.acme.prod" -Target "D:\Ruta\Input"
 rag -EnvFile ".env.acme.prod" -Target "D:\Ruta\Input\Documento.docx" -Reprocess
 ```
 
-## 11) Onboarding de nuevo cliente
+## 11) New Client Onboarding
 
-Checklist rápido para dar de alta un cliente nuevo sin tocar código:
+Quick checklist to onboard a new client without touching code:
 
-1) Crear archivo de entorno del cliente:
+1) Create the client environment file:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
 Copy-Item (Join-Path $toolDir ".env.example") (Join-Path $toolDir ".env.<cliente>.<entorno>") -Force
 ```
 
-2) Editar `.env.<cliente>`:
-- `OPENROUTER_API_KEY`: clave del cliente.
-- `RAG_OPENROUTER_MODEL`: modelo acordado para ese cliente.
-- `RAG_FAIL_FAST`, `RAG_ENABLE_PREFLIGHT`, `RAG_FORCE_REPROCESS`: política operativa.
-- Se permiten comentarios en líneas que empiezan por `#`.
+2) Edit `.env.<cliente>`:
+- `OPENROUTER_API_KEY`: client key.
+- `RAG_OPENROUTER_MODEL`: model agreed for that client.
+- `RAG_FAIL_FAST`, `RAG_ENABLE_PREFLIGHT`, `RAG_FORCE_REPROCESS`: operational policy.
+- Comments are allowed on lines starting with `#`.
 
-3) Ejecutar una prueba mínima sobre un archivo:
+3) Run a minimal test on a file:
 
 ```powershell
 rag -EnvFile ".env.<cliente>" -Target "D:\Ruta\Documento.docx"
 ```
 
-4) Validar resultado:
-- Consola con `NORM_OK`.
-- Revisar `rag_converter_summary.txt` y `rag_converter_qa_log.txt`.
-- En esta versión los artefactos están en `outputs/logs`.
+4) Validate the result:
+- Console shows `NORM_OK`.
+- Review `rag_converter_summary.txt` and `rag_converter_qa_log.txt`.
+- In this version, artifacts are in `outputs/logs`.
 
-5) Operación diaria del cliente:
+5) Daily client operation:
 
 ```powershell
 rag -EnvFile ".env.<cliente>.<entorno>"
 ```
 
-6) Reproceso total cuando sea necesario:
+6) Full reprocessing when needed:
 
 ```powershell
 rag -EnvFile ".env.<cliente>.<entorno>" -Reprocess
 ```
 
-## 12) Convención de naming para `.env` (Enterprise)
+## 12) Naming Convention for `.env` (Enterprise)
 
-Para escalar sin fricción, usar esta convención:
+To scale without friction, use this convention:
 
 - `.env.<cliente>.<entorno>`
-- `<cliente>`: identificador estable (sin espacios), por ejemplo `acme`, `clinicax`, `lexcorp`.
-- `<entorno>`: `dev`, `staging` o `prod`.
+- `<cliente>`: stable identifier (no spaces), e.g. `acme`, `clinicax`, `lexcorp`.
+- `<entorno>`: `dev`, `staging`, or `prod`.
 
-Ejemplos:
+Examples:
 
 - `.env.acme.dev`
 - `.env.acme.prod`
 - `.env.lexcorp.staging`
 
-Flujo recomendado:
+Recommended workflow:
 
-1) Crear variante por entorno desde la base del cliente:
+1) Create a variant per environment from the client base:
 
 ```powershell
 $toolDir = "D:\Ruta\RAG_Converter_Tool"
@@ -292,40 +294,40 @@ Copy-Item (Join-Path $toolDir ".env.example") (Join-Path $toolDir ".env.acme.dev
 Copy-Item (Join-Path $toolDir ".env.example") (Join-Path $toolDir ".env.acme.prod") -Force
 ```
 
-2) Ejecutar por entorno:
+2) Execute per environment:
 
 ```powershell
 rag -EnvFile ".env.acme.dev"
 rag -EnvFile ".env.acme.prod" -Target "D:\Ruta\Input" -Reprocess
 ```
 
-## 13) Informe de Certificación RAG-Ready
+## 13) RAG-Ready Certification Report
 
-Generación automática de informe ejecutivo desde `rag_converter_summary.txt`:
+Automatic executive report generation from `rag_converter_summary.txt`:
 
 ```powershell
 $toolDir = "D:\Ruta\Donde\Está\RAG_Converter_Tool"
 & (Join-Path $toolDir "Gen-Report.ps1") -Cliente "Cliente Demo" -Firmante "Nombre Apellido" -Modo comercial
 ```
 
-Opcionalmente puedes definir salida:
+Optionally define the output:
 
 ```powershell
 $toolDir = "D:\Ruta\Donde\Está\RAG_Converter_Tool"
 & (Join-Path $toolDir "Gen-Report.ps1") -Cliente "Cliente Demo" -Modo tecnico -OutputPath (Join-Path $toolDir "outputs\reports\Informe_RAG_Auditoria.md")
 ```
 
-Notas:
-- El informe usa métricas reales del summary/log; si un dato no existe, se muestra como `N/D`.
-- Se evita inventar KPIs (por ejemplo porcentajes de OCR o aceleraciones) si no están medidos en los archivos de evidencia.
-- Modos disponibles: `-Modo comercial` (storytelling ejecutivo) y `-Modo tecnico` (auditoría forense).
-- Por defecto, los logs se generan en `outputs/logs` y los reportes en `outputs/reports` (rutas portables, no hardcodeadas).
-- El informe incorpora `DHI (Data Health Index)` con escala 0-100 y grados (`WORLD CLASS`, `ENTERPRISE READY`, `ACCEPTABLE`, `NEEDS IMPROVEMENT`).
-- El DHI se calcula con 4 pilares ponderados: Integridad (30), Semántica (40), Normalización OCR (20), Citación (10).
-- Caso sin imágenes (`VISION_ITEMS=0`): no penaliza; se marca como `Texto puro` en el pilar semántico.
-- El cálculo de DHI usa `summary + qa log`; puedes sobreescribir QA con `-QaPath`.
+Notes:
+- The report uses real metrics from the summary/log; if a data point does not exist, it is shown as `N/D`.
+- It avoids inventing KPIs (e.g. OCR percentages or speedups) if they are not measured in the evidence files.
+- Available modes: `-Modo comercial` (executive storytelling) and `-Modo tecnico` (forensic audit).
+- By default, logs are generated in `outputs/logs` and reports in `outputs/reports` (portable paths, not hardcoded).
+- The report incorporates `DHI (Data Health Index)` with a 0-100 scale and grades (`WORLD CLASS`, `ENTERPRISE READY`, `ACCEPTABLE`, `NEEDS IMPROVEMENT`).
+- The DHI is calculated with 4 weighted pillars: Integrity (30), Semantics (40), OCR Normalization (20), Citation (10).
+- Case without images (`VISION_ITEMS=0`): no penalty; it is marked as `Texto puro` in the semantics pillar.
+- The DHI calculation uses `summary + qa log`; you can override QA with `-QaPath`.
 
-Atajo con alias (tras cargar `Enable-RagAlias.ps1`):
+Shortcut with aliases (after loading `Enable-RagAlias.ps1`):
 
 ```powershell
 rag-report -Modo comercial -Cliente "Cliente Demo" -Firmante "Nombre Apellido"
